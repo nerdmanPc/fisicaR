@@ -1,14 +1,17 @@
 # Massa do pendulo (Kg)
 pendulo.massa <- 0.0671
 
+# Angulo de inclinacao do pendulo (rad)
+theta <- (5*pi)/180
+
+# Valor da aceleracao da gravidade na UFBA
+G <- 9.7833
+
 # Banco de dados do experimento
 pendulo.data <- read.csv(file="pendulo.csv",sep=";")
 
-# Adicionando a coluna com as medias dos tempos
+# Adicione uma coluna com as medias dos tempos
 pendulo.data$tmedia <- (pendulo.data$t1 + pendulo.data$t2 + pendulo.data$t3)/3
-
-# Angulo de inclinacao do pendulo (rad)
-theta <- (5*pi)/180
 
 # Funcao horaria do pendulo em funcao do tempo:
 # x(t) = A * cos(w*t + o) onde:
@@ -72,11 +75,52 @@ plot(pendulo.Aceleracao, col="blue", main="Pêndulo: Aceleração x Tempo", xlab
 dev.off()
 
 # Desenhe os graficos das tres funcoes simultaneamente
-#X11() ### ===DEBUG ONLY===
 jpeg("pendulo_funcoes.png")
 plot(pendulo.Posicao, col="red", main="Pêndulo: Sobreposicao Posição, Velocidade e Aceleração", xlab="Tempo(s)", ylab="Posição(m) | Velocidade(m/s) | Aceleração(m/s²)", xlim=c(0,10))
 plot(pendulo.Velocidade, col="green",  xlim=c(0,10), add=T)
 plot(pendulo.Aceleracao, col="blue",  xlim=c(0,10), add=T)
 legend("bottomright", c("Posição", "Velocidade", "Aceleração"), cex=0.8, col=c("red", "green", "blue"), lty=1)
 dev.off()
-#invisible(readLines("stdin", n=1)) ### ===DEBUG ONLY===
+
+# Executando summary() para Posicao, Velocidade e Aceleracao nos tempos t=0:10 tem-se que:
+# max_pendulo.Posicao = 0.09390m (Amplitude do movimento)
+# max_pendulo.Velocidade = 0.069377m/s (Velocidade maxima do movimento)
+# max_pendulo.Aceleracao = 0.052856m/s^2 (Maxima aceleracao do movimento)
+
+# Defina uma funcao para calcular a Energia Cinetica do pendulo em funcao do tempo
+pendulo.Ecin <- function(t){
+  vel <- pendulo.Velocidade(t)
+  return ((pendulo.massa*(vel^2))/2)
+}
+
+# Com o angulo theta e a velocidade maxima
+# podemos extrair a energia potencial maxima e a energia cinetica maxima
+# Quanto a energia potencial, tomamos como referencia um ponto extremamente proximo do solo
+# quando o pendulo se encontra em repouso. Sejam:
+# * h0 a altura do pendulo em relacao ao solo quando em repouso
+# * Li a altura do pendulo em relacao ao solo quando distendido
+# Nesse referencial, h0 -> 0
+# Com isso, Epot = m*g*h, onde h = Li + ho
+# Como h0 ->0 tempos Epot = m*g*Li
+# Conforme mostrado em sala, Li=L*(1-cos(theta)), portanto
+# Epot = m*g*L*(1-cos(theta))
+
+# Em relacao aos valores da 10a iteracao do experimento
+# Energia potencial maxima do sistema:
+pendulo.maxEpot <- pendulo.massa * G * pendulo.data$comprimento[10] * (1 - cos(theta))
+# Energia cinetica maxima do sistema:
+pendulo.maxEcin <- (pendulo.massa * (0.069377^2))/2
+
+# Imprima na tela os valores
+print("pendulo.maxEpot")
+print(pendulo.maxEpot)
+print("pendulo.maxEcin")
+print(pendulo.maxEcin)
+
+# Desenhe o grafico da energia cinetica
+jpeg("pendulo_ecin.png")
+plot(pendulo.Ecin, col="red", main="Pêndulo: Energia Cinética x Tempo", xlab="Tempo(s)", ylab="Energia Cinética(J)", xlim=c(0,10))
+dev.off()
+
+# Duvida para discussao:
+# Discrepancia entre valores de energia: porque nao sao iguais? Ha algo errado?
