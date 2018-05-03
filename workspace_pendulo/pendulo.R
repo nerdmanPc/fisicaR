@@ -77,57 +77,69 @@ var_theta <- pendulo.theta*cos(pendulo.data$omega[10]*t)
 return(pendulo.massa*G*pendulo.data$comprimento[10]*(1-cos(var_theta)))
 }
 
+# A energia mecanica eh a soma das energias potencial e cinetica
+# Defina uma funcao para isso
+pendulo.Em <- function(t){
+  return(pendulo.Epot(t)+pendulo.Ecin(t))
+}
+
 # ==============================
 # Desenho dos graficos
 # ==============================
 
-# Dados obtidos: T x L
+# Dados obtidos: Periodo x Comprimento do Pendulo
 jpeg("pendulo_TxL.png")
-plot(pendulo.data$comprimento, pendulo.data$tmedia, main="Pêndulo: Comprimento x Período", xlab="L(m)", ylab="T(s)")
+plot(pendulo.data$comprimento, pendulo.data$tmedia, main="Pêndulo: Período x Comprimento", xlab="L(m)", ylab="T(s)")
 dev.off()
 
 # Dados obtidos: Regressao linear
 jpeg("pendulo_lm.png")
-plot(pendulo.data$comprimento, pendulo.data$tmedia2, main="Pêndulo: Comprimento x Período²", xlab="L(m)", ylab="T²(s²)")
+plot(pendulo.data$comprimento, pendulo.data$tmedia2, main="Pêndulo: Período² x Comprimento", xlab="L(m)", ylab="T²(s²)")
 abline(pendulo.lm)
 dev.off()
 
 # Posicao em funcao do tempo
 jpeg("pendulo_posicao.png")
-plot(pendulo.Posicao, col="red", main="Pêndulo: Posição x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Posição(m)", xlim=c(0,3))
+plot(pendulo.Posicao, col="red", main="Pêndulo: Posição x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Posição(m)", xlim=c(0,pendulo.data$tmedia[10]))
 dev.off()
 
 # Velocidade em funcao do tempo
 jpeg("pendulo_velocidade.png")
-plot(pendulo.Velocidade, col="green", main="Pêndulo: Velocidade x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Velocidade(m/s)", xlim=c(0,3))
+plot(pendulo.Velocidade, col="green", main="Pêndulo: Velocidade x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Velocidade(m/s)", xlim=c(0,pendulo.data$tmedia[10]))
 dev.off()
 
 # Aceleracao em funcao do tempo
 jpeg("pendulo_aceleracao.png")
-plot(pendulo.Aceleracao, col="blue", main="Pêndulo: Aceleração x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Aceleração(m/s²)", xlim=c(0,3))
+plot(pendulo.Aceleracao, col="blue", main="Pêndulo: Aceleração x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Aceleração(m/s²)", xlim=c(0,pendulo.data$tmedia[10]))
 dev.off()
 
 # Posicao + Velocidade + Aceleracao
 jpeg("pendulo_funcoes.png")
-plot(pendulo.Posicao, col="red", main="Pêndulo: Posição, Velocidade e Aceleração", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Posição(m) | Velocidade(m/s) | Aceleração(m/s²)", yaxt='n', xlim=c(0,3), ylim=c(-1.5,1.5))
-plot(pendulo.Velocidade, col="green",  xlim=c(0,3), add=T)
-plot(pendulo.Aceleracao, col="blue",  xlim=c(0,3), add=T)
-legend("bottomright", c("Posição", "Velocidade", "Aceleração"), cex=0.8, col=c("red", "green", "blue"), lty=1)
-dev.off()
-
-# Energia Cinetica
-jpeg("pendulo_ecin.png")
-plot(pendulo.Ecin, col="red", main="Pêndulo: Energia Cinética x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Energia Cinética(J)", xlim=c(0,3))
+plot(pendulo.Posicao, col="red", main="Pêndulo: Posição, Velocidade e Aceleração", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Posição(m) | Velocidade(m/s) | Aceleração(m/s²)", yaxt='n', xlim=c(0,pendulo.data$tmedia[10]), ylim=c(-1.5,1.5))
+plot(pendulo.Velocidade, col="green",  xlim=c(0,pendulo.data$tmedia[10]), add=T)
+plot(pendulo.Aceleracao, col="blue",  xlim=c(0,pendulo.data$tmedia[10]), add=T)
+legend("topright", c("Posição", "Velocidade", "Aceleração"), cex=0.8, col=c("red", "green", "blue"), lty=1)
 dev.off()
 
 # Energia Potencial
 jpeg("pendulo_Epot.png")
-plot(pendulo.Epot, col="green", main="Pêndulo: Energia Potencial x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Energia Potencial(J)", xlim=c(0,3))
+plot(pendulo.Epot, col="red", main="Pêndulo: Energia Potencial x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Energia Potencial(J)", xlim=c(0,pendulo.data$tmedia[10]))
+dev.off()
+
+# Energia Cinetica
+jpeg("pendulo_ecin.png")
+plot(pendulo.Ecin, col="green", main="Pêndulo: Energia Cinética x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Energia Cinética(J)", xlim=c(0,pendulo.data$tmedia[10]))
+dev.off()
+
+# Energia mecanica
+jpeg("pendulo_Em.png")
+plot(pendulo.Em, col="blue", main="Pêndulo: Energia Mecânica x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Energia Mecanica(J)", xlim=c(0,pendulo.data$tmedia[10]))
 dev.off()
 
 # Variacao da energia do pendulo
 jpeg("pendulo_Energia.png")
-plot(pendulo.Ecin, col="red", main="Pêndulo: Variação da Energia do Sistema", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Energia(J)", xlim=c(0,3), ylim=c(0,0.005))
-plot(pendulo.Epot, col="green", xlim=c(0,3), ylim=c(0,0.005), add=T)
-legend("topright", c("Energia Cinética", "Energia Potencial"), cex=0.8, col=c("red", "green"), lty=1)
+plot(pendulo.Epot, col="red", main="Pêndulo: Variação da Energia do Sistema", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Energia(J)", xlim=c(0,pendulo.data$tmedia[10]), ylim=c(0,0.005))
+plot(pendulo.Ecin, col="green", xlim=c(0,pendulo.data$tmedia[10]), add=T)
+plot(pendulo.Em, col="blue", xlim=c(0,pendulo.data$tmedia[10]), add=T)
+legend("topright", c("Energia Potencial", "Energia Cinética", "Energia Mecânica"), cex=0.8, col=c("red", "green", "blue"), lty=1)
 dev.off()
