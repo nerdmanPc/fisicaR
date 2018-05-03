@@ -100,17 +100,17 @@ dev.off()
 
 # Posicao em funcao do tempo
 jpeg("pendulo_posicao.png")
-plot(pendulo.Posicao, col="red", main="Pêndulo: Posição x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Posição(m)", xlim=c(0,pendulo.data$tmedia[10]))
+plot(pendulo.Posicao, col="red", main="Pêndulo: Posição x Tempo", sub=expression(paste("x(t)=0.0939*cos(3.7654t) | ", omega, "=3.765393")), xlab="Tempo(s)", ylab="Posição(m)", xlim=c(0,pendulo.data$tmedia[10]))
 dev.off()
 
 # Velocidade em funcao do tempo
 jpeg("pendulo_velocidade.png")
-plot(pendulo.Velocidade, col="green", main="Pêndulo: Velocidade x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Velocidade(m/s)", xlim=c(0,pendulo.data$tmedia[10]))
+plot(pendulo.Velocidade, col="green", main="Pêndulo: Velocidade x Tempo", sub=expression(paste("v(t)=-0.3534*cos(3.7654t) | ", omega, "=3.765393")), xlab="Tempo(s)", ylab="Velocidade(m/s)", xlim=c(0,pendulo.data$tmedia[10]))
 dev.off()
 
 # Aceleracao em funcao do tempo
 jpeg("pendulo_aceleracao.png")
-plot(pendulo.Aceleracao, col="blue", main="Pêndulo: Aceleração x Tempo", sub=expression(paste(omega, "=3.765393")), xlab="Tempo(s)", ylab="Aceleração(m/s²)", xlim=c(0,pendulo.data$tmedia[10]))
+plot(pendulo.Aceleracao, col="blue", main="Pêndulo: Aceleração x Tempo", sub=expression(paste("a(t)=-1.3309*cos(3.7654t) | ", omega, "=3.765393")), xlab="Tempo(s)", ylab="Aceleração(m/s²)", xlim=c(0,pendulo.data$tmedia[10]))
 dev.off()
 
 # Posicao + Velocidade + Aceleracao
