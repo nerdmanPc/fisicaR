@@ -1,4 +1,4 @@
-# Importar dataset "data_mru.csv"
+# Importar dataset "./mru/data_mru.csv"
 
 data_mru[6, "Sensor1_s"] <- sum(data_mru[1:5, "Sensor1_s"]) / 5
 data_mru[6, "Sensor2_s"] <- sum(data_mru[1:5, "Sensor2_s"]) / 5
