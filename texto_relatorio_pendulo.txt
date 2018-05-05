@@ -1,0 +1,212 @@
+No experimento do pêndulo, objetivou-se analisar o comportamento de uma esfera presa a um cordão que executava um movimento pendular com o tempo. Com base nos resultados do experimento, construiram-se funções que descreveram a variação da posição, velocidade e aceleração da esfera em função do tempo, além de funções que descreveram a variação de energia da esfera em função do tempo. Também buscou-se estimar o valor da aceleração da gravidade com base nos dados obtidos e compara-los com os valores usados na academia e os valores calculados nas imediações da UFBA.
+
+No experimento usou-se uma esfera de massa "m", amarrada a uma corda de comprimento "L". A outra extremidade da corda foi amarrada a um anteparo situado a uma altura "h" em relação ao solo, fazendo com que a esfera ficasse suspensa a uma altura "h0" também em relação ao solo. A esfera foi, então, deslocada de sua posição de repouso, variando sua altura em "L'" metros e formando um arco de ângulo "theta" igual a 5° e, em seguida, solta livremente.
+
+A esfera descreveu um movimento pendular que se repetiu cinco vezes. Cronometrou-se o tempo necessário para a esfera completar as cinco oscilações. Para minimizar o erro de cronometragem, repetiu-se o procedimento três vezes e calculou-se a média de tempo das 15 oscilações. Tal média será o período "T" do pêndulo. Variou-se o comprimento do pêndulo e calculou-se o valor de "T" para dez comprimentos de pêndulo "L" diferentes.
+
+Os valores obtidos no experimento podem ser observados na tabela a seguir. Os dados foram processados e analisados usando o ambiente R.
+
+<inserir tabela com os dados obtidos>
+<insira codigo abaixo: valores iniciais>
+G <- 9.7833 # Valor da aceleracao da gravidade na UFBA
+pendulo.massa <- 0.0671 # Massa do pendulo (Kg)
+pendulo.theta <- (5*pi)/180 # Angulo de inclinacao do pendulo (rad)
+pendulo.data <- read.csv(file="pendulo.csv",sep=";") # Banco de dados do experimento
+pendulo.data$tmedia <- (pendulo.data$t1 + pendulo.data$t2 + pendulo.data$t3)/12 # Adicione uma coluna com as medias dos tempos
+pendulo.data$tmedia2 <- pendulo.data$tmedia * pendulo.data$tmedia # Adicione uma coluna com os tempos linearizados
+pendulo.data$amplitude <- pendulo.data$comprimento * sin(pendulo.theta) # Adicione uma coluna com as amplitudes {A=L*sin(theta)}
+pendulo.data$omega <- (2*pi)/pendulo.data$tmedia # Adicione uma coluna com as velocidades angulares {w=(2*pi)/T}
+
+Em seguida, comparou-se o valor de período obtido com o comprimento do pêndulo, obtendo-se o gráfico a seguir:
+
+<inserir gráfico Periodo x Comprimento>
+
+Como o período de um pendulo é dado pela formula T = 2 * pi * sqrt(L/G) (onde "L" representa o comprimento do pêndulo e "G" representa o valor da aceleração da gravidade), o gráfico nos mostra que os pontos do gráfico se assemelham a uma função de raiz tal qual a fórmula de período aqui apresentada.
+
+Porém, o valor de "G" varia conforme o referencial. Quanto mais afastado da Terra, menor o valor de "G". Em geral, assume-se G = 9.8 m/s². Nas imediações da Universidade Federal da Bahia G = 9.7822 m/s² (valor calculado pelo Instituto de Geofísica da universidade). Resta saber se os pontos obtidos condizem com os gráficos de período descritos com base nos valores de G citados. Além disso, se o valor de G no experimento do pêndulo está de acordo com os valores de G citados acima.
+
+Podemos calcular o valor de G a partir da fórmula anterior se aplicarmos o processo de Regressão Linear. Mais uma vez ressaltamos que o período do pêndulo pode ser calculado por:
+
+T = 2 * pi * sqrt(L/G) [1]
+
+Elevando ao quadrado os dois lados da equação [1] temos:
+
+T² = 4 * pi² * (L/G)
+
+Que pode ser re-escrito como:
+
+T² = (4 * pi²)/G * L [2]
+
+No ambiente R, a regressão linear foi realizada mediante o seguinte fragmento de cógido:
+
+<insira codigo abaixo: regressao linear>
+pendulo.lm <- lm(pendulo.data$tmedia2 ~ pendulo.data$comprimento)
+
+Observe no gráfico abaixo o resultado da regressão linear dos dados do experimento. De fato, os pontos se assemelham a uma reta da forma Y = <alpha>x + <beta>
+
+<insira gráfico regressao linear>
+
+Comparando com a equação [2], temos que:
+
+<alpha> = (4 * pi²)/G
+
+Isolando G chegamos a:
+
+G = (4 * pi²)/<alpha> [3]
+
+Para obtermos o valor de <alpha>, precisaremos calcular o valor do coeficiente angular da reta gerada pela regressão linear.
+
+Usando o ambiente R, podemos calcular os coeficientes de regressão linear. Tais coeficientes equivalem aos coeficientes da reta que estamos procurando:
+
+<imprima no terminal R o valor de pendulo.lm, insira o resultado aqui>
+
+A reta desenhada pode ser descrita pela seguinte equação:
+
+<insira codigo abaixo: pendulo.Retalm()>
+pendulo.Retalm <- function(l){
+  return(0.04251 + (3.98022 * l))
+}
+
+Usando conceitos básicos de trigonometria, o valor de <alpha> pode ser calculado como
+
+<alpha> = var(y)/var(x)
+
+Vamos selecionar dois pontos aleatórios do gráfico para calcular "<alpha>". Sejam x0 = 0 e x1 = 1. Daí:
+
+<insira o codigo abaixo>
+> pendulo.Retalm(0)
+[1] 0.04251
+> pendulo.Retalm(1)
+[1] 4.02273
+
+Com isso:
+
+<insira o codigo abaixo>
+lma <- (pendulo.Retalm(1) - pendulo.Retalm(0)) / (1-0)
+> lma
+[1] 3.98022
+
+De posse do valor de <alpha> podemos, finalmente, obter o valor de G:
+
+<insira o codigo abaixo>
+G_estimado <- (4 * pi * pi)/lma
+> G_estimado
+[1] 9.918652
+
+O valor estimado de G = 9.918652 m/s² é, de fato, um valor bem próximo dos valores de aceleração de gravidade préviamente calculados. Se construirmos os gráficos que descrevem a variação do período do pêndulo em função de seu comprimento, e compara-los com os valores obtidos no experimento teremos o seguinte gráfico que nos mostra que os valores obtidos condizem com os valores esperados na teoria. Além disso, confirma-se que a medida que aumentamos o comprimento do pêndulo, o seu período de oscilação também aumenta.
+
+<insira gráfico Período Observado x Teórico>
+
+As funções que descrevem o período do tempo são dadas por:
+
+<insira código abaixo: funções de período>
+pendulo.Periodo_UFBA <- function(l){
+  return(2 * pi * sqrt(l/G))
+}
+
+pendulo.Periodo_estimado <- function(l){
+  return(2 * pi * sqrt(l/G_estimado))
+}
+
+De posse do período do pêndulo, podemos elaborar funções que descrevem o seu comportamento em função do tempo. Tais funções nos permitirão analisar como a posição, a velocidade e a aceleração do pêndulo variam com o passar do tempo.
+
+Como já foi mostrado anteriormente, o período do pêndulo varia conforme o seu comprimento, afetando os valores de A e <omega>, permitindo-nos descrever múltiplas funções. A partir desse ponto, opteramos por estudar apenas as funções do pêndulo em relação ao maior comprimento de pêndulo medido.
+
+Sejam "L" o comprimento do pêndulo e "T" o seu período. Podemos definir a amplitude do movimento do pêndulo "A" e a sua velocidade angular <omega> pelas seguintes expressões:
+
+A = L * sen(theta) [4]
+omega = (2*pi)/T [5]
+
+No ambiente R, tais valores são expressos pelas variáveis pendulo.data$amplitude e pendulo.data$omega.
+
+Com os valores de [4] e [5] podemos definir a função que descreve a posição do pêndulo em função do tempo como: x(t) = A * cos(<omega> * t + <fi>), onde fi refere-se ao coeficiente de mudança de fase do pêndulo. Por questões de simplificação, assumiremos fi=0. Com isso:
+
+x(t) = A * cos(omega * t) [6]
+
+Derivando [6], obtemos a função que define a velocidade do pêndulo:
+
+v(t) = -(A * omega * (sen(omega * t))) [7]
+
+Derivando [7], obtemos a função que define a aceleração do pêndulo:
+
+a(t) = -(A * omega² * (cos(omega * t))) [8]
+
+No ambiente R, as funções [6], [7] e [8]
+
+<insira codigo abaixo: def. funcoes>
+pendulo.Posicao <- function(t){
+  return(pendulo.data$amplitude[10]*cos(pendulo.data$omega[10]*t))
+}
+
+pendulo.Velocidade <- function(t){
+  return(-(pendulo.data$amplitude[10]*pendulo.data$omega[10]*sin(pendulo.data$omega[10]*t)))
+}
+
+pendulo.Aceleracao <- function(t){
+  return(-(pendulo.data$amplitude[10]*pendulo.data$omega[10]*pendulo.data$omega[10]*cos(pendulo.data$omega[10]*t)))
+}
+
+Os gráficos dessas funções são apresentados a seguir:
+
+<inserir gráfico posicao x tempo>
+<inserir grafico velocidade x tempo>
+<inserir grafico aceleracao x tempo>
+
+Pelos gráficos é possível atestar o comportamento esperado de um pêndulo. Quando liberado de sua posição inicial (no ponto mais alto da função x(t)), a velocidade inicial do pêndulo é nula e este inicia um movimento acelerado, ganhando velocidade com o tempo. O ponto x(t) = 0 representa o ponto onde o pêndulo encontra-se em sua altura mínima. Aqui a velocidade do pêndulo é máxima e sua aceleração é nula. A partir desse ponto troca-se o sinal da aceleração e o pêndulo inicia um movimento retardado, perdendo velocidade com o tempo. No ponto mais baixo da função x(t), a velocidade do pêndulo é nula e sua aceleração é máxima. A partir daqui o processo se repete, com os sinais de velocidade e aceleração sendo trocados, até a conclusão da oscilação.
+
+<inserir gráfico posicao+velocidade+aceleracao>
+
+Agora faremos a análise da energia do sistema. Sejam "m" a massa da esfera do pêndulo, "g" a aceleração da gravidade, "h" a altura do pêndulo em relação ao solo e "v" a velocidade do pêndulo. A energia potencial e a energia cinética do sistema são definidos por:
+
+Epot = m * g * h [9]
+Ecin = (m * v²)/2 [10]
+
+Em relação a [9], vale destacar que a altura "h" é composta de dois componentes:
+* h0: a altura do pêndulo em relação ao solo quando em repouso
+* l': a variação da altura do pêndulo em relação ao solo quando pertubado (isto é, quando deslocado para o início do movimento)
+
+Por isso h = h0 + l'
+
+No experimento, tomou-se como referencial um plano onde o pêndulo, quando em repouso, encontra-se muito próximo do solo. Neste referencial assumiremos h0 = 0 e, portanto, h = l'. Substituindo isso na equação [9] temos:
+
+Epot = m * g * l'
+
+Onde l' pode ser descrito em função do comprimento do pêndulo como l' = L * (1 - cos(theta)). Por fim:
+
+Epot = m * g * L * (1 - cos(theta))
+
+Durante todo o movimento, o ângulo do pêndulo varia em função do tempo e da velocidade angular do mesmo. Com isso, se multiplicarmos theta por cos(omega * t), podemos descrever a energia potencial do sistema em função do tempo:
+
+Epot = m * g * L * (1 - (cos(theta) * cos(omega * t))) [11]
+
+Já na equação [10], a velocidade "v" pode ser obtida pelo valor da equação [7]. No ambiente R, as equações [10] e [11] são descritas como:
+
+<inserir código abaixo: Ecin e Epot>
+pendulo.Ecin <- function(t){
+  vel <- pendulo.Velocidade(t)
+  return((pendulo.massa*(vel^2))/2)
+}
+
+pendulo.Epot <- function(t){
+  var_theta <- pendulo.theta*cos(pendulo.data$omega[10]*t)
+  return(pendulo.massa*G*pendulo.data$comprimento[10]*(1-cos(var_theta)))
+}
+
+A energia mecânica do sistema será a soma das suas energias potencial e cinética:
+
+Em <- Epot + Ecin [12]
+
+<inserir código abaixo: Epot>
+pendulo.Em <- function(t){
+  return(pendulo.Epot(t)+pendulo.Ecin(t))
+}
+
+Os gráficos das funções [10], [11] e [12] são mostrados abaixo:
+
+<inserir gráfico energia potencial>
+<inserir gráfico energia cinética>
+<inserir gráfico energia mecânica>
+
+É interessante notar que, apesar da oscilação do gráfico da energia mecânica, a sua variação é muito pequena e, portanto, desprezivel. O gráfico a seguir deixa isso mais claro. Além disso é possível mostrar, também, que o princípio da conservação da energia mecânica é válido.
+
+<inserir gráfico potencial+cinética+mecânica>

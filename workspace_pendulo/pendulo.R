@@ -45,6 +45,15 @@ lma <- (pendulo.Retalm(1) - pendulo.Retalm(0)) / (1-0)
 # Por fim, chegamos a um valor estimado de G:
 G_estimado <- (4 * pi * pi)/lma
 
+# Essas sao as formulas que calculam o periodo com base nos valores de gravidade da UFBA e o estimado acima:
+pendulo.Periodo_UFBA <- function(l){
+  return(2 * pi * sqrt(l/G))
+}
+
+pendulo.Periodo_estimado <- function(l){
+  return(2 * pi * sqrt(l/G_estimado))
+}
+
 # Funcao horaria do pendulo em funcao do tempo definida como:
 # x(t) = A * cos(w*t + o) onde:
 # A: amplitude; w:vel.angular; o:var. mudanca de fase
@@ -124,6 +133,14 @@ dev.off()
 jpeg("pendulo_lm.png")
 plot(pendulo.data$comprimento, pendulo.data$tmedia2, main="Pêndulo: Período² x Comprimento", xlab="L(m)", ylab="T²(s²)")
 abline(pendulo.lm)
+dev.off()
+
+# Periodo Observado x Periodo Teorico"
+jpeg("pendulo_T-ObservadoXteorico.png")
+plot(pendulo.data$comprimento, pendulo.data$tmedia, main="Pêndulo: Período Observado x Período Teórico", xlab="L(m)", ylab="T(s)")
+plot(pendulo.Periodo_UFBA, col="red", xlim=c(0,pendulo.data$comprimento[10]), add=T)
+plot(pendulo.Periodo_estimado, col="green", xlim=c(0,pendulo.data$comprimento[10]), add=T)
+legend("bottomright", c("Período observado", "Período Teórico com G_UFBA", "Período Teórico com G_estimado"), cex=0.8, pch=c(1, -1, -1), col=c("black", "red", "green"), lty=1)
 dev.off()
 
 # Posicao em funcao do tempo
