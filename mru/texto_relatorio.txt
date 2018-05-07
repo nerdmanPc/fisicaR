@@ -1,0 +1,7 @@
+MRU - Movimento Retilíneo Uniforme
+
+Ocorre quando um corpo se move em linha reta a uma velocidade constante. Nosso experimento de MRU consiste em uma massa lançada em um trilho de ar totalmente horizontal. Isso garante que nem a gravidade nem o atrito com o trilho interfiram na velocidade do corpo.
+
+Ao longo do trilho, foram instalados sensores responsáveis por medir o tempo desde a saida do carrinho até a passagem por cada um deles. Com isso, obtivemos uma função de posição no tempo.
+
+Em seguida, supundo que a velocidade do corpo é relativamente constante durante o experimento, fizemos uma regressão linear nas medidas obtidas e encontramaos uma velocidade de 0,891 m/s.
